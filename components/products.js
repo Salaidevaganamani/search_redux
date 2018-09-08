@@ -4,9 +4,16 @@ import * as productActions from "../actionCreators/search";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { FlatList } from "react-native-gesture-handler";
-import { SearchBar } from 'react-native-elements';
+import { SearchBar, Button } from 'react-native-elements';
 
 class ProductList extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            name:'',
+        }
+    }
+    
     componentDidMount() {
         this.props.actions.getProducts();
         this.props.actions.getSearchProduct(this.props.products, "");
@@ -22,8 +29,12 @@ class ProductList extends Component {
 
     _onSearch(text){
         console.log(text);
-        let filterProduct = this.props.products.filter((fill) => fill.title.toLowerCase().indexOf(text.toLowerCase())> -1);
-        this.props.actions.getSearchProduct(filterProduct, text);
+        this.setState({name: text});
+    }
+
+    _handleSearch(name){
+        let filterProduct = this.props.products.filter((fill) => fill.title.toLowerCase().indexOf(name.toLowerCase())> -1);
+        this.props.actions.getSearchProduct(filterProduct, name);
     }
 
     _renderItem = ({item}) => (
@@ -50,6 +61,15 @@ class ProductList extends Component {
                 onChangeText={this._onSearch.bind(this)}
                 onClearText={this._onSearch.bind(this)}
                 placeholder='Search Products' />
+                <Button 
+                title = 'Search'
+                onPress= {()=>this._handleSearch(this.state.name)}
+                buttonStyle={{
+                    backgroundColor: "rgba(92, 99,216, 1)",
+                    borderColor: "transparent",
+                    borderWidth: 0,
+                    borderRadius: 5
+                  }}/>
                 {isLoading ? (
                     <View style={{flex:1, justifyContent: "center"}}>
                         <ActivityIndicator size="large" color="green"/>
